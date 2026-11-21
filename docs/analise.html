@@ -1,0 +1,49 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>RentSmart — Análise teórica</title>
+<style>
+@page { size: A4; margin: 18mm; }
+body { font: 11pt Arial, sans-serif; color: #172638; line-height: 1.42; }
+h1 { color: #194d65; font-size: 22pt; }
+h2 { color: #194d65; font-size: 15pt; margin-top: 20px; }
+h3 { font-size: 12pt; }
+.page { break-before: page; }
+.flow { text-align: center; font-size: 9pt; line-height: 1.15; }
+.box { display: inline-block; border: 1px solid #194d65; border-radius: 5px; padding: 5px 12px; min-width: 270px; }
+.arrow { margin: 2px; }
+</style>
+</head>
+<body>
+<h1>RentSmart</h1>
+<p>Enunciado, análise e organização da solução de orçamento de locação.</p>
+<h2>Problema e regras de negócio</h2>
+<p>A R.M Imóveis precisa substituir cálculos manuais por um orçamento consistente e uma projeção dos pagamentos do primeiro ano. O sistema diferencia o aluguel mensal da taxa contratual de R$ 2.000,00, parcelável de uma a cinco vezes.</p>
+<p>O aluguel-base é de R$ 700,00 para apartamento, R$ 900,00 para casa e R$ 1.200,00 para estúdio. O segundo quarto acrescenta R$ 200,00 ao apartamento ou R$ 250,00 à casa. Uma vaga nesses imóveis custa R$ 300,00 mensais. No estúdio, o estacionamento é opcional e começa com duas vagas por R$ 250,00, com R$ 60,00 por vaga adicional. O apartamento sem crianças recebe desconto de 5% após os adicionais.</p>
+<p>Premissas: não há vaga isolada para estúdio, pois o pacote inicial tem duas vagas; estúdio não oferece seleção de quartos. A taxa é paga nos primeiros meses e o eventual ajuste de centavos ocorre na última parcela. Não se consideram reajustes ou outros custos.</p>
+<h2>Entradas, processamento e saídas</h2>
+<ul><li><b>Entradas:</b> tipo de imóvel, quartos e vaga quando aplicáveis, quantidade de vagas no estúdio, presença de crianças no apartamento e número de parcelas.</li>
+<li><b>Processamento:</b> validar as escolhas; calcular base e adicionais; aplicar eventual desconto; dividir a taxa; compor os pagamentos de 12 meses.</li>
+<li><b>Saídas:</b> resumo detalhado no terminal e CSV com mês, aluguel, parcela contratual e total de cada mês.</li></ul>
+<div class="page"></div>
+<h2>Fluxograma</h2>
+<div class="flow">
+<div class="box">Início</div><div class="arrow">↓</div>
+<div class="box">Ler e validar tipo de imóvel</div><div class="arrow">↓</div>
+<div class="box">Ler e validar quartos, vagas e crianças conforme o tipo</div><div class="arrow">↓</div>
+<div class="box">Ler e validar parcelas da taxa (1 a 5)</div><div class="arrow">↓</div>
+<div class="box">Calcular aluguel-base e adicionais</div><div class="arrow">↓</div>
+<div class="box">Apartamento sem crianças? Sim: aplicar desconto de 5%; não: manter subtotal</div><div class="arrow">↓</div>
+<div class="box">Calcular parcelas, ajustando centavos na última</div><div class="arrow">↓</div>
+<div class="box">Exibir resumo e projetar aluguel + parcela para 12 meses</div><div class="arrow">↓</div>
+<div class="box">Gravar CSV e informar o caminho</div><div class="arrow">↓</div>
+<div class="box">Fim</div>
+<p>Em cada leitura inválida, informar o erro e repetir a respectiva pergunta.</p>
+</div>
+<h2>Estrutura de classes</h2>
+<p><b>PropertyType</b> representa as categorias. <b>RentalRequest</b> guarda tipo, quartos, vagas, presença de crianças e parcelas, validando suas combinações na criação. <b>Quote</b> guarda os componentes do orçamento e calcula a parcela de um mês em <i>contract_payment</i>.</p>
+<p><b>QuoteCalculator</b> aplica as regras em <i>calculate</i>. <b>MonthlyPayment</b> representa mês, aluguel e parcela e expõe o total. <b>ProjectionService</b> cria os 12 pagamentos. <b>CsvProjectionWriter</b> escreve as linhas em arquivo. A interface de terminal coleta dados e apresenta o resultado, sem concentrar as regras comerciais.</p>
+<h2>Pensamento algorítmico e orientação a objetos</h2>
+<p>O problema foi decomposto em validação, cálculo, projeção e apresentação. Condições selecionam as regras de cada imóvel e uma repetição gera os meses. As classes agrupam dados e comportamentos com responsabilidades próprias; objetos imutáveis representam pedidos e resultados. Valores monetários usam Decimal para evitar imprecisão binária e facilitar o ajuste dos centavos.</p>
+</body></html>
